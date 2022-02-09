@@ -12,7 +12,7 @@ win32-g++:contains(QMAKE_HOST.arch, x86_64):{
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-CONFIG += c++11
+CONFIG += c++20
 
 RC_ICONS = B23Downloader.ico
 

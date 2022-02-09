@@ -699,8 +699,8 @@ static QnList qnListDifference(QnList a, QnList b)
     //    ret.resize(a.size());
     //    auto end = std::set_difference(a.constBegin(), a.constEnd(), b.constBegin(), b.constEnd(), ret.begin());
     //    ret.resize(end - ret.begin());
-    std::sort(a.begin(), a.end(), std::greater<QnList::Type>());
-    std::sort(b.begin(), b.end(), std::greater<QnList::Type>());
+    std::sort(a.begin(), a.end(), std::greater<QnList::iterator::value_type>());
+    std::sort(b.begin(), b.end(), std::greater<QnList::iterator::value_type>());
     auto itA = a.constBegin();
     auto endA = a.constEnd();
     auto itB = b.constBegin();
@@ -782,22 +782,22 @@ void DownloadDialog::updateQnComboBox(QnList qnList)
     QList<std::pair<int, QString>> qnDescList;
     if (contentType == ContentType::Live) {
         for (auto qn : qnList) {
-            qnDescList.emplaceBack(qn, LiveDownloadTask::getQnDescription(qn));
+            qnDescList.append(std::make_pair(qn, LiveDownloadTask::getQnDescription(qn)));
         }
         if (!onlyOneItem) {
             qnList = qnListDifference(LiveDownloadTask::getAllPossibleQn(), std::move(qnList));
             for (auto qn : qnList) {
-                qnDescList.emplaceBack(qn, "* " + LiveDownloadTask::getQnDescription(qn));
+                qnDescList.append(std::make_pair(qn, "* " + LiveDownloadTask::getQnDescription(qn)));
             }
         }
     } else {
         for (auto qn : qnList) {
-            qnDescList.emplaceBack(qn, VideoDownloadTask::getQnDescription(qn));
+            qnDescList.append(std::make_pair(qn, VideoDownloadTask::getQnDescription(qn)));
         }
         if (!onlyOneItem) {
             qnList = qnListDifference(VideoDownloadTask::getAllPossibleQn(), std::move(qnList));
             for (auto qn : qnList) {
-                qnDescList.emplaceBack(qn, "* " + VideoDownloadTask::getQnDescription(qn));
+                qnDescList.append(std::make_pair(qn, "* " + VideoDownloadTask::getQnDescription(qn)));
             }
         }
     }
@@ -835,9 +835,11 @@ QList<AbstractDownloadTask*> DownloadDialog::getDownloadTasks()
                 continue;
             }
             auto itemTitle = videoItem->longTitle();
-            metaInfos.emplaceBack(
+            metaInfos.append(
+                std::make_tuple(
                 videoItem->contentItemId(),
                 (itemTitle.isEmpty() ? title : title + " " + itemTitle)
+                     )
             );
         }
         for (auto &[itemId, name] : metaInfos) {

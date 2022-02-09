@@ -165,7 +165,7 @@ void LoginDialog::getLoginInfoFinished()
             tipLabel->setText("✅扫描成功<br>请在手机上确认");
             break;
         default:
-            QMessageBox::warning(this, "Poll Warning", QString("unknown code: %1").arg(data.toInteger()));
+            QMessageBox::warning(this, "Poll Warning", QString("unknown code: %1").arg(data.toInt()));
         }
     } else {
         // scanned and confirmed

@@ -4,6 +4,8 @@
 #include <QIODevice>
 #include <QVector>
 
+#include <memory>
+
 namespace Flv {
 
 using std::unique_ptr;

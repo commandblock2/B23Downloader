@@ -5,7 +5,7 @@
 #include "Network.h"
 #include <QtNetwork>
 
-using QRegExp = QRegularExpression;
+//using QRegularExpression = QRegularExpression;
 using std::make_unique;
 using std::move;
 
@@ -43,17 +43,17 @@ void Extractor::start(QString url)
     // bad coding style?!
 
     // try to match short forms
-    if ((m = QRegExp("^(?:BV|bv)([a-zA-Z0-9]+)$").match(url)).hasMatch()) {
+    if ((m = QRegularExpression("^(?:BV|bv)([a-zA-Z0-9]+)$").match(url)).hasMatch()) {
         return startUgcByBvId("BV" + m.captured(1));
     }
-    if ((m = QRegExp(R"(^av(\d+)$)").match(url)).hasMatch()) {
+    if ((m = QRegularExpression(R"(^av(\d+)$)").match(url)).hasMatch()) {
         return startUgcByAvId(m.captured(1).toLongLong());
     }
-    if ((m = QRegExp(R"(^(ss|ep)(\d+)$)").match(url)).hasMatch()) {
+    if ((m = QRegularExpression(R"(^(ss|ep)(\d+)$)").match(url)).hasMatch()) {
         auto idType = (m.captured(1) == "ss" ? PgcIdType::SeasonId : PgcIdType::EpisodeId);
         return startPgc(idType, m.captured(2).toLongLong());
     }
-    if ((m = QRegExp(R"(^live(\d+)$)").match(url)).hasMatch()) {
+    if ((m = QRegularExpression(R"(^live(\d+)$)").match(url)).hasMatch()) {
         return startLive(m.captured(1).toLongLong());
     }
 
@@ -71,43 +71,43 @@ void Extractor::parseUrl(QUrl url)
     auto query = QUrlQuery(url);
     QRegularExpressionMatch m;
 
-    if (QRegExp(R"(^(?:www\.|m\.)?bilibili\.com$)").match(host).hasMatch()) {
-        if ((m = QRegExp(R"(^/bangumi/play/(ss|ep)(\d+)/?$)").match(path)).hasMatch()) {
+    if (QRegularExpression(R"(^(?:www\.|m\.)?bilibili\.com$)").match(host).hasMatch()) {
+        if ((m = QRegularExpression(R"(^/bangumi/play/(ss|ep)(\d+)/?$)").match(path)).hasMatch()) {
             auto idType = (m.captured(1) == "ss" ? PgcIdType::SeasonId : PgcIdType::EpisodeId);
             return startPgc(idType, m.captured(2).toLongLong());
         }
-        if ((m = QRegExp(R"(^/bangumi/media/md(\d+)/?$)").match(path)).hasMatch()) {
+        if ((m = QRegularExpression(R"(^/bangumi/media/md(\d+)/?$)").match(path)).hasMatch()) {
             return startPgcByMdId(m.captured(1).toLongLong());
         }
-        if ((m = QRegExp(R"(^/cheese/play/(ss|ep)(\d+)/?$)").match(path)).hasMatch()) {
+        if ((m = QRegularExpression(R"(^/cheese/play/(ss|ep)(\d+)/?$)").match(path)).hasMatch()) {
             auto idType = (m.captured(1) == "ss" ? PugvIdType::SeasonId : PugvIdType::EpisodeId);
             return startPugv(idType, m.captured(2).toLongLong());
         }
 
         focusItemId = query.queryItemValue("p").toLongLong();
-        if ((m = QRegExp(R"(^/(?:(?:s/)?video/)?(?:BV|bv)([a-zA-Z0-9]+)/?$)").match(path)).hasMatch()) {
+        if ((m = QRegularExpression(R"(^/(?:(?:s/)?video/)?(?:BV|bv)([a-zA-Z0-9]+)/?$)").match(path)).hasMatch()) {
             return startUgcByBvId("BV" + m.captured(1));
         }
-        if ((m = QRegExp(R"(^/(?:(?:s/)?video/)?av(\d+)/?$)").match(path)).hasMatch()) {
+        if ((m = QRegularExpression(R"(^/(?:(?:s/)?video/)?av(\d+)/?$)").match(path)).hasMatch()) {
             return startUgcByAvId(m.captured(1).toLongLong());
         }
-//        if ((m = QRegExp(R"(^$)").match(path)).hasMatch()) {
+//        if ((m = QRegularExpression(R"(^$)").match(path)).hasMatch()) {
 //        }
         return urlNotSupported();
     }
 
     if (host == "bangumi.bilibili.com") {
-        if ((m = QRegExp(R"(^/anime/(\d+)/?$)").match(path)).hasMatch()) {
+        if ((m = QRegularExpression(R"(^/anime/(\d+)/?$)").match(path)).hasMatch()) {
             return startPgc(PgcIdType::SeasonId, m.captured(1).toLongLong());
         }
         return urlNotSupported();
     }
 
     if (host == "live.bilibili.com") {
-        if ((m = QRegExp(R"(^/(?:h5/)?(\d+)/?$)").match(path)).hasMatch()) {
+        if ((m = QRegularExpression(R"(^/(?:h5/)?(\d+)/?$)").match(path)).hasMatch()) {
             return startLive(m.captured(1).toLongLong());
         }
-        if ((m = QRegExp(R"(^/blackboard/activity-.*\.html$)").match(path)).hasMatch()) {
+        if ((m = QRegularExpression(R"(^/blackboard/activity-.*\.html$)").match(path)).hasMatch()) {
             return startLiveActivity(url);
         }
 
@@ -115,7 +115,7 @@ void Extractor::parseUrl(QUrl url)
     }
 
     if (host == "b23.tv") {
-        if ((m = QRegExp(R"(^/(ss|ep)(\d+)$)").match(path)).hasMatch()) {
+        if ((m = QRegularExpression(R"(^/(ss|ep)(\d+)$)").match(path)).hasMatch()) {
             auto idType = (m.captured(1) == "ss" ? PugvIdType::SeasonId : PugvIdType::EpisodeId);
             return startPgc(idType, m.captured(2).toLongLong());
         } else {
@@ -124,11 +124,11 @@ void Extractor::parseUrl(QUrl url)
     }
 
     if (host == "manga.bilibili.com") {
-        if ((m = QRegExp(R"(^/(?:m/)?detail/mc(\d+)/?$)").match(path)).hasMatch()) {
+        if ((m = QRegularExpression(R"(^/(?:m/)?detail/mc(\d+)/?$)").match(path)).hasMatch()) {
             focusItemId = query.queryItemValue("epId").toLongLong();
             return startComic(m.captured(1).toLongLong());
         }
-        if ((m = QRegExp(R"(^/(?:m/)?mc(\d+)/(\d+)/?$)").match(path)).hasMatch()) {
+        if ((m = QRegularExpression(R"(^/(?:m/)?mc(\d+)/(\d+)/?$)").match(path)).hasMatch()) {
             focusItemId = m.captured(2).toLongLong();
             return startComic(m.captured(1).toLongLong());
         }
@@ -238,7 +238,7 @@ void Extractor::startPgcByMdId(qint64 mdId)
         if (result.isEmpty()) {
             return;
         }
-        auto ssid = result["media"].toObject()["season_id"].toInteger();
+        auto ssid = result["media"].toObject()["season_id"].toInt();
         startPgc(PgcIdType::SeasonId, ssid);
     });
 }
@@ -305,7 +305,7 @@ void Extractor::pgcFinished()
     auto type = res["type"].toInt();
     QString indexSuffix = (type == 1 || type == 4) ? "话" : "集";
 
-    auto ssid = res["season_id"].toInteger();
+    auto ssid = res["season_id"].toInt();
     auto title = res["title"].toString();
     auto pgcRes = make_unique<SectionListResult>(ContentType::PGC, ssid, title);
     auto mainSecEps = res["episodes"].toArray();
@@ -314,17 +314,19 @@ void Extractor::pgcFinished()
         totalEps = mainSecEps.size();
     }
     auto indexFieldWidth = QString::number(totalEps).size();
-    pgcRes->sections.emplaceBack("正片");
+    pgcRes->sections.append(Section("正片"));
     auto &mainSection = pgcRes->sections.first();
     for (auto epValR : mainSecEps) {
         auto epObj = epValR.toObject();
         auto title = epObj["title"].toString();
         auto longTitle = epObj["long_title"].toString();
-        mainSection.episodes.emplaceBack(
-            epObj["id"].toInteger(),
+        mainSection.episodes.append(
+            ContentItem(
+            epObj["id"].toInt(),
             epTitle(epIndexedTitle(title, indexFieldWidth, indexSuffix), longTitle),
             qRound(epObj["duration"].toDouble() / 1000.0),
             epFlags(epObj["status"].toInt())
+            )
         );
     }
     if (focusItemId == 0 && mainSection.episodes.size() == 1) {
@@ -337,15 +339,17 @@ void Extractor::pgcFinished()
         if (eps.size() == 0) {
             continue;
         }
-        pgcRes->sections.emplaceBack(secObj["title"].toString());
+        pgcRes->sections.append(Section(secObj["title"].toString()));
         auto &sec = pgcRes->sections.last();
         for (auto &&epValR : eps) {
             auto epObj = epValR.toObject();
-            sec.episodes.emplaceBack(
-                epObj["id"].toInteger(),
+            sec.episodes.append(
+                ContentItem(
+                epObj["id"].toInt(),
                 epTitle(epObj["title"].toString(), epObj["long_title"].toString()),
                 qRound(epObj["duration"].toDouble() / 1000.0),
                 epFlags(epObj["status"].toInt())
+                )
             );
         }
     }
@@ -419,7 +423,7 @@ void Extractor::liveFinished()
         return;
     }
 
-    auto roomId = roomInfo["room_id"].toInteger();
+    auto roomId = roomInfo["room_id"].toInt();
     bool hasPayment = (roomInfo["special_type"].toInt() == 1);
     auto title = roomInfo["title"].toString();
     auto uname = data["anchor_info"].toObject()["base_info"].toObject()["uname"].toString();
@@ -466,10 +470,10 @@ void Extractor::liveActivityFinished()
         emit errorOccurred("解析活动页面失败。<br>建议尝试数字房间号链接, 比如<em>live.bilibili.com/22586886</em>");
     };
 
-    auto m = QRegExp(R"(window.__BILIACT_ENV__\s?=([^;]+);)").match(text);
+    auto m = QRegularExpression(R"(window.__BILIACT_ENV__\s?=([^;]+);)").match(text);
     auto platform = m.captured(1); // null if no match
     if (platform.contains("H5")) {
-        m = QRegExp(R"(\\?"jumpUrl\\?"\s?:\s?\\?"([^"\\]+)\\?")").match(text, m.capturedEnd(0));
+        m = QRegularExpression(R"(\\?"jumpUrl\\?"\s?:\s?\\?"([^"\\]+)\\?")").match(text, m.capturedEnd(0));
         if (m.hasMatch()) {
             startLiveActivity(m.captured(1));
         } else {
@@ -478,7 +482,7 @@ void Extractor::liveActivityFinished()
         return;
     }
 
-    m = QRegExp(R"(\\?"defaultRoomId\\?"\s?:\s?\\?"?(\d+))").match(text, m.capturedEnd(0));
+    m = QRegularExpression(R"(\\?"defaultRoomId\\?"\s?:\s?\\?"?(\d+))").match(text, m.capturedEnd(0));
     if (!m.hasMatch()) {
         parseFailed();
         return;
@@ -511,16 +515,18 @@ void Extractor::pugvFinished()
         return;
     }
 
-    auto ssid = data["season_id"].toInteger();
+    auto ssid = data["season_id"].toInt();
     auto title = data["title"].toString();
     ItemListResult(ContentType::PUGV, ssid, title);
     auto pugvRes = make_unique<ItemListResult>(ContentType::PUGV, ssid, title);
     for (auto &&epValR : data["episodes"].toArray()) {
         auto epObj = epValR.toObject();
-        pugvRes->items.emplaceBack(
-            epObj["id"].toInteger(),
+        pugvRes->items.append(
+            ContentItem(
+            epObj["id"].toInt(),
             epObj["title"].toString(),
             epObj["duration"].toInt()
+            )
         );
     }
 
@@ -570,15 +576,16 @@ void Extractor::ugcFinished()
         return;
     }
 
-    auto avid = data["aid"].toInteger();
+    auto avid = data["aid"].toInt();
     auto title = data["title"].toString();
     auto ugcRes = make_unique<ItemListResult>(ContentType::UGC, avid, title);
     for (auto &&pageValR : pages) {
         auto pageObj = pageValR.toObject();
-        ugcRes->items.emplaceBack(
-            pageObj["cid"].toInteger(),
+        ugcRes->items.append(
+            ContentItem(
+            pageObj["cid"].toInt(),
             pageObj["part"].toString(),
-            pageObj["duration"].toInt()
+            pageObj["duration"].toInt())
         );
     }
 
@@ -631,7 +638,7 @@ void Extractor::comicFinished()
         return;
     }
 
-    auto id = data["id"].toInteger();
+    auto id = data["id"].toInt();
     auto title = data["title"].toString();
     auto comicRes = make_unique<ItemListResult>(ContentType::Comic, id, title);
     auto epList = data["ep_list"].toArray();
@@ -664,8 +671,8 @@ void Extractor::comicFinished()
             indexWidth
         );
 
-        auto epid = epObj["id"].toInteger();
-        comicRes->items.emplaceBack(epid, title, 0, flags);
+        auto epid = epObj["id"].toInt();
+        comicRes->items.append(ContentItem(epid, title, 0, flags));
     }
 
 

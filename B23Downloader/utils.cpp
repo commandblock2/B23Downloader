@@ -103,7 +103,7 @@ QString Utils::fileExtension(const QString &fileName)
     if (dotPos < 0) {
         return QString();
     }
-    return fileName.sliced(dotPos);
+    return fileName.mid(0, dotPos);
 }
 
 int Utils::numberOfDigit(int num)
